@@ -29,6 +29,10 @@ pcap_t *create_pcap(const char *dev, const char *filter) {
 	if (!pcap)
 		errx(1, "Could not create pcap handle: %.*s", PCAP_ERRBUF_SIZE, errbuf);
 
+	ret = pcap_set_snaplen(pcap, 65535);
+	if (ret != 0)
+		errx(1, "Failed to set snapshot length: %s", pcap_geterr(pcap));
+
 	ret = pcap_set_immediate_mode(pcap, true);
 	if (ret != 0)
 		errx(1, "Failed to set immediate mode: %s", pcap_geterr(pcap));
