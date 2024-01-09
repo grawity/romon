@@ -115,7 +115,7 @@ void start_pipe(struct iface *ifaces) {
 
 int main(int argc, char *argv[]) {
 	const char *filter = "ether proto 0x88bf";
-	int opt;
+	int i, opt;
 	struct iface ifaces[2];
 
 	while ((opt = getopt(argc, argv, "a:b:")) != -1) {
@@ -131,12 +131,13 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	if (!ifaces[0].name || !ifaces[1].name)
-		errx(2, "error: Interfaces not specified");
+	for (i = 0; i < 2; i++) {
+		if (!ifaces[i].name)
+			errx(2, "error: Interfaces not specified");
 
-	ifaces[0].cap = create_pcap(ifaces[0].name, filter);
-	ifaces[1].cap = create_pcap(ifaces[1].name, filter);
-	
+		ifaces[i].cap = create_pcap(ifaces[i].name, filter);
+	}
+
 	start_pipe(ifaces);
 	return 0;
 }
