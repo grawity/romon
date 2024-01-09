@@ -81,13 +81,9 @@ void *cap_thread_worker(void *args) {
 	return NULL;
 }
 
-void start_pipe(char *devs[], pcap_t *pcaps[]) {
+void start_pipe(struct iface *ifaces) {
 	int i, ret;
 	pthread_t threads[2];
-	struct iface ifaces[2] = {
-		{devs[0], pcaps[0]},
-		{devs[1], pcaps[1]},
-	};
 	struct worker_args args[2] = {
 		{ifaces, 0, 1},
 		{ifaces, 1, 0},
@@ -120,28 +116,27 @@ void start_pipe(char *devs[], pcap_t *pcaps[]) {
 int main(int argc, char *argv[]) {
 	const char *filter = "ether proto 0x88bf";
 	int opt;
-	char *devs[2];
-	pcap_t *pcaps[2];
+	struct iface ifaces[2];
 
 	while ((opt = getopt(argc, argv, "a:b:")) != -1) {
 		switch (opt) {
 		case 'a':
-			devs[0] = optarg;
+			ifaces[0].name = optarg;
 			break;
 		case 'b':
-			devs[1] = optarg;
+			ifaces[1].name = optarg;
 			break;
 		default:
 			errx(2, "Usage: %s -a <iface> -b <iface>", argv[0]);
 		}
 	}
 
-	if (!devs[0] || !devs[1])
+	if (!ifaces[0].name || !ifaces[1].name)
 		errx(2, "error: Interfaces not specified");
 
-	pcaps[0] = create_pcap(devs[0], filter);
-	pcaps[1] = create_pcap(devs[1], filter);
+	ifaces[0].cap = create_pcap(ifaces[0].name, filter);
+	ifaces[1].cap = create_pcap(ifaces[1].name, filter);
 	
-	start_pipe(devs, pcaps);
+	start_pipe(ifaces);
 	return 0;
 }
