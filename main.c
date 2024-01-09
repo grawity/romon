@@ -6,11 +6,15 @@
 
 #include <pcap.h>
 
-struct worker_args {
-	char *capdev;
+struct iface {
+	char *name;
 	pcap_t *cap;
-	char *injdev;
-	pcap_t *inj;
+};
+
+struct worker_args {
+	struct iface *ifaces;
+	int cap_index;
+	int inj_index;
 };
 
 pcap_t *create_pcap(const char *dev, const char *filter) {
@@ -64,15 +68,15 @@ void cap_callback(u_char *data, const struct pcap_pkthdr *hdr, const u_char *byt
 
 void *cap_thread_worker(void *args) {
 	struct worker_args a = *((struct worker_args *)args);
-	pcap_t *cap = a.cap;
-	pcap_t *inj = a.inj;
+	struct iface cap = a.ifaces[a.cap_index];
+	struct iface inj = a.ifaces[a.inj_index];
 	int ret;
 
-	warnx("Capturing on %s, injecting on %s", a.capdev, a.injdev);
+	warnx("Capturing on %s, injecting on %s", cap.name, inj.name);
 
-	ret = pcap_loop(cap, /*count*/ -1, cap_callback, (u_char *) inj);
+	ret = pcap_loop(cap.cap, /*count*/ -1, cap_callback, (u_char *) inj.cap);
 	if (ret < 0)
-		errx(1, "Failed to start capture loop: %s", pcap_geterr(cap));
+		errx(1, "Failed to start capture loop: %s", pcap_geterr(cap.cap));
 
 	return NULL;
 }
@@ -80,9 +84,13 @@ void *cap_thread_worker(void *args) {
 void start_pipe(char *devs[], pcap_t *pcaps[]) {
 	int i, ret;
 	pthread_t threads[2];
+	struct iface ifaces[2] = {
+		{devs[0], pcaps[0]},
+		{devs[1], pcaps[1]},
+	};
 	struct worker_args args[2] = {
-		{devs[0], pcaps[0], devs[1], pcaps[1]},
-		{devs[1], pcaps[1], devs[0], pcaps[0]},
+		{ifaces, 0, 1},
+		{ifaces, 1, 0},
 	};
 
 	for (i = 0; i < 2; i++) {
@@ -95,7 +103,8 @@ void start_pipe(char *devs[], pcap_t *pcaps[]) {
 
 		memset(name, 0, sizeof(name));
 		snprintf(name, sizeof(name)-1, "[%.6s>%.6s]",
-				args[i].capdev, args[i].injdev);
+				ifaces[args[i].cap_index].name,
+				ifaces[args[i].inj_index].name);
 		ret = pthread_setname_np(threads[i], name);
 		if (ret < 0)
 			err(1, "pthread_setname_np failed");
