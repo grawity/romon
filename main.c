@@ -8,7 +8,7 @@
 
 struct iface {
 	char *name;
-	pcap_t *cap;
+	pcap_t *pcap;
 };
 
 struct worker_args {
@@ -19,35 +19,35 @@ struct worker_args {
 
 pcap_t *create_pcap(const char *dev, const char *filter) {
 	int ret;
-	char cap_eb[PCAP_ERRBUF_SIZE];
+	char errbuf[PCAP_ERRBUF_SIZE];
 	struct bpf_program prog;
-	pcap_t *cap;
+	pcap_t *pcap;
 
-	memset(cap_eb, 0, PCAP_ERRBUF_SIZE);
+	memset(errbuf, 0, PCAP_ERRBUF_SIZE);
 
-	cap = pcap_create(dev, cap_eb);
-	if (!cap)
-		errx(1, "Could not create pcap handle: %.*s", PCAP_ERRBUF_SIZE, cap_eb);
+	pcap = pcap_create(dev, errbuf);
+	if (!pcap)
+		errx(1, "Could not create pcap handle: %.*s", PCAP_ERRBUF_SIZE, errbuf);
 
-	ret = pcap_set_immediate_mode(cap, true);
+	ret = pcap_set_immediate_mode(pcap, true);
 	if (ret != 0)
-		errx(1, "Failed to set immediate mode: %s", pcap_geterr(cap));
+		errx(1, "Failed to set immediate mode: %s", pcap_geterr(pcap));
 
-	ret = pcap_activate(cap);
+	ret = pcap_activate(pcap);
 	if (ret < 0)
-		errx(1, "Failed to activate capture: %s", pcap_geterr(cap));
+		errx(1, "Failed to activate capture: %s", pcap_geterr(pcap));
 	else if (ret > 0)
-		warnx("Capture active with warnings: %s", pcap_geterr(cap));
+		warnx("Capture active with warnings: %s", pcap_geterr(pcap));
 
-	ret = pcap_compile(cap, &prog, filter, /*optimize*/ 1, PCAP_NETMASK_UNKNOWN);
+	ret = pcap_compile(pcap, &prog, filter, /*optimize*/ 1, PCAP_NETMASK_UNKNOWN);
 	if (ret != 0)
-		errx(1, "Failed to compile filter: %s", pcap_geterr(cap));
+		errx(1, "Failed to compile filter: %s", pcap_geterr(pcap));
 
-	ret = pcap_setfilter(cap, &prog);
+	ret = pcap_setfilter(pcap, &prog);
 	if (ret != 0)
-		errx(1, "Failed to attach filter: %s", pcap_geterr(cap));
+		errx(1, "Failed to attach filter: %s", pcap_geterr(pcap));
 
-	return cap;
+	return pcap;
 }
 
 void cap_callback(u_char *data, const struct pcap_pkthdr *hdr, const u_char *bytes) {
@@ -74,9 +74,9 @@ void *cap_thread_worker(void *args) {
 
 	warnx("Capturing on %s, injecting on %s", cap.name, inj.name);
 
-	ret = pcap_loop(cap.cap, /*count*/ -1, cap_callback, (u_char *) inj.cap);
+	ret = pcap_loop(cap.pcap, /*count*/ -1, cap_callback, (u_char *) inj.pcap);
 	if (ret < 0)
-		errx(1, "Failed to start capture loop: %s", pcap_geterr(cap.cap));
+		errx(1, "Failed to start capture loop: %s", pcap_geterr(cap.pcap));
 
 	return NULL;
 }
@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
 		if (!ifaces[i].name)
 			errx(2, "error: Interfaces not specified");
 
-		ifaces[i].cap = create_pcap(ifaces[i].name, filter);
+		ifaces[i].pcap = create_pcap(ifaces[i].name, filter);
 	}
 
 	start_pipe(ifaces);
