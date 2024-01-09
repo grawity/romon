@@ -54,6 +54,40 @@ pcap_t *create_pcap(const char *dev, const char *filter) {
 	return pcap;
 }
 
+char *fmt_mac(const u_char buf[6]) {
+	static char str[18];
+	snprintf(str, sizeof(str),
+		"%02X:%02X:%02X:%02X:%02X:%02X",
+		buf[0], buf[1], buf[2], buf[3], buf[4], buf[5]);
+	return str;
+}
+
+char *whose_mac(const u_char buf[6]) {
+	if (memcmp(buf, "\x18\xFD\x74\x71\x50\x0E", 6) == 0)
+		return "WindGW";
+	if (memcmp(buf, "\x18\xFD\x74\x73\xC5\x3A", 6) == 0)
+		return "DuneGW";
+	if (memcmp(buf, "\x6C\x3B\x6B\x4C\x3B\x9C", 6) == 0)
+		return "EmberGW";
+	if (memcmp(buf, "\xD4\xCA\x6D\xDD\x8C\xBA", 6) == 0)
+		return "KST AP [ether1]";
+	if (memcmp(buf, "\xD4\xCA\x6D\xDD\x8C\xBE", 6) == 0)
+		return "KST AP [ether5]";
+	if (memcmp(buf, "\x6C\x3B\x6B\xC0\x00\xBA", 6) == 0)
+		return "GW-B56 [sfp1]";
+	if (memcmp(buf, "\x6C\x3B\x6B\xC0\x00\xBE", 6) == 0)
+		return "GW-B56 [ether1]";
+	if (memcmp(buf, "\x6C\x3B\x6B\xC0\x00\xBF", 6) == 0)
+		return "GW-B56 [ether2]";
+	if (memcmp(buf, "\xE4\x8D\x8C\x7B\x5A\x84", 6) == 0)
+		return "GW-Mai18 [ether1]";
+	if (memcmp(buf, "\xE4\x8D\x8C\x7B\x5A\x85", 6) == 0)
+		return "GW-Mai18 [ether2]";
+	return "?";
+}
+
+#define ETH_ALEN 6
+
 void cap_callback(u_char *data, const struct pcap_pkthdr *hdr, const u_char *buf) {
 	pcap_t *inj = (pcap_t *)data;
 	int ret;
@@ -65,9 +99,33 @@ void cap_callback(u_char *data, const struct pcap_pkthdr *hdr, const u_char *buf
 	if (hdr->caplen < hdr->len)
 		warnx("warning: Captured only %u out of %u bytes", hdr->caplen, hdr->len);
 
+#if 0
 	ret = pcap_sendpacket(inj, buf, hdr->caplen);
 	if (ret != 0)
 		warnx("Could not inject packet: %s", pcap_geterr(inj));
+#endif
+
+	const u_char *ptr = buf;
+	const u_char *end = buf + hdr->caplen;
+	const u_char *dst_mac = ptr; ptr += ETH_ALEN;
+	const u_char *src_mac = ptr; ptr += ETH_ALEN;
+	uint16_t ethertype = (ptr[0] << 8) | (ptr[1]); ptr += 2;
+	if (!strcmp(whose_mac(src_mac), "KST AP [ether5]"))
+		return;
+	//warnx("Dst: %s", fmt_mac(dst_mac));
+	warnx("Src: %s (%s)", fmt_mac(src_mac), whose_mac(src_mac));
+	warnx("Type: %04x", ethertype);
+	warnx("Payload: %lu bytes", end - ptr);
+
+	uint16_t maybe_type = (ptr[0] << 8) | (ptr[1]); ptr += 2;
+	warnx("- Maybe type: %04x", maybe_type);
+	uint16_t frame_len = (ptr[0] << 8) | (ptr[1]); ptr += 2;
+	warnx("- Total frame length: %u (%s)", frame_len,
+		frame_len == hdr->len ? "OK" : "not ok");
+	for (int i = 0; i < end-ptr; i++) {
+		printf("%02x ", ptr[i]);
+	}
+	printf("\n\n");
 }
 
 void *cap_thread_worker(void *args) {
