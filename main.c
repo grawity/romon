@@ -54,18 +54,18 @@ pcap_t *create_pcap(const char *dev, const char *filter) {
 	return pcap;
 }
 
-void cap_callback(u_char *data, const struct pcap_pkthdr *hdr, const u_char *bytes) {
+void cap_callback(u_char *data, const struct pcap_pkthdr *hdr, const u_char *buf) {
 	pcap_t *inj = (pcap_t *)data;
 	int ret;
 
 #if 0
-	warnx("Got a packet: %p [%u]", bytes, hdr->caplen);
+	warnx("Got a packet: %p [%u]", buf, hdr->caplen);
 #endif
 
 	if (hdr->caplen < hdr->len)
 		warnx("warning: Captured only %u out of %u bytes", hdr->caplen, hdr->len);
 
-	ret = pcap_sendpacket(inj, bytes, hdr->caplen);
+	ret = pcap_sendpacket(inj, buf, hdr->caplen);
 	if (ret != 0)
 		warnx("Could not inject packet: %s", pcap_geterr(inj));
 }
