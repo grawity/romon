@@ -11,7 +11,7 @@ f_tag = ProtoField.uint8("romon.disco.tag", "Tag", base.DEC, f_tag_names)
 f_len = ProtoField.uint8("romon.disco.len", "Length", base.DEC)
 f_strval = ProtoField.string("romon.disco.str", "Value")
 f_binval = ProtoField.bytes("romon.disco.bin", "Value")
-f_addr = ProtoField.ether("romon.disco.id", "RoMON ID")
+f_addr = ProtoField.bytes("romon.disco.id", "RoMON ID")
 
 f_link = ProtoField.none("romon.disco.link", "Link")
 f_link_maybeid = ProtoField.uint32("romon.disco.link_maybeid", "Link ID?", base.DEC)
