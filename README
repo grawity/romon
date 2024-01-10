@@ -1,0 +1,1 @@
+Wireshark: Copy (or symlink) the Lua files to `~/.local/lib/wireshark/plugins/`, hit Ctrl-Shift-L to reload.
