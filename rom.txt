@@ -1,0 +1,204 @@
+Discover probe from kst-ap
+
+01 00 / 00 62 / 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+aa bb cc dd ee ff / ff ff ff ff ff ff
+00 00
+	00 00 00 00 00 00
+01 22
+	aa bb cc dd ee ff
+	00 00 00 00 / 00 00 00 00 / 00 00 00 00 00 00
+	00 00 00 0a / 06 3e 00 64 / d4 ca 6d dd 8c be
+
+Unicast discover reply from DuneGW
+
+02 00 / 00 9e / 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+aa bb cc dd ee ff / 18 fd 74 73 c5 3a
+00 00
+	00 00 00 00 00 00
+01 22(34)
+	aa bb cc dd ee ff
+	00 00 00 00 / 00 00 00 00 / 00 00 00 00 00 00
+	00 00 00 0a / 06 3e 00 64 / d4 ca 6d dd 8c be
+01 22(34)
+	18:fd:74:73:c5:3a
+	00 00 00 0c / 06 38 00 64 / 18:fd:74:73:c5:3a
+	00 00 00 00 / 00 00 00 00 / 00 00 00 00 00 00
+03 <Ident> 06 'DuneGW'
+04 <Vers> 04 07 0d (7.13) 66 00
+05 <Model> 08 'RB750Gr3'
+
+EmberGW forwards advert from GW-B56
+
+01 00 / 00 6c / 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+6c 3b 6b c0 00 ba / ff ff ff ff ff ff
+01 01
+	00 00 00 00 00 00
+	00 00 00 0d / 6c 3b 6b c0 00 ba
+01 22
+	6c 3b 6b 4c 3b 9c
+	00 00 00 0d 06 3e 00 64 / 6c 3b 6b 4c 3b a0
+	00 00 00 10 06 3a 00 64 / 6c 3b 6b 4c 3b 9c
+
+EmberGW forwards advert from ???
+
+01 00 / 00 76 / 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+18 fd 74 75 de 23 / ff ff ff ff ff ff 
+02 02
+	00 00 00 00 00 00
+	00 00 00 29 / 18 fd 74 75 de 22
+	00 00 00 0d / e4 8d 8c 7b 5a 84
+01 22
+	6c 3b 6b 4c 3b 9c
+	00 00 00 0d 06 3e 00 64 / 6c 3b 6b 4c 3b a0
+	00 00 00 10 06 3a 00 64 / 6c 3b 6b 4c 3b 9c
+
+
+RoMON SSH from AP-M7-14 [D4:CA:6D:DD:8C:BA] via [6C:3B:6B:C0:00:BA] via M18 to [18:FD:74:75:DE:23]
+
+==> SSH initial packet (TCP SYN?)
+
+03 00 / 00 68 (len) / 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+(src) d4 ca 6d dd 8c ba / (dst) 18 fd 74 75 de 23
+03 (hops) 00 (hop_ptr)
+	00 00 00 00
+	00 00 00 06 / 6c 3b 6b c0 00 ba
+	00 00 00 06 / e4 8d 8c 7b 5a 84
+	00 00 00 29 / 18 fd 74 75 de 22
+59 cc (sport) / 00 03 (dport) /
+	00 c0 / 1a a3 16 a9 (seq) / 00 00 00 00 (ack)
+
+03 00 / 00 68 / 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+d4 ca 6d dd 8c ba / 18 fd 74 75 de 23 /
+03 00
+	00 00 00 00
+	00 00 00 06 / 6c 3b 6b c0 00 ba
+	00 00 00 06 / e4 8d 8c 7b 5a 84
+	00 00 00 29 / 18 fd 74 75 de 22
+50 a7 / 00 03 /
+	00 c0 / 42 4b 4e b0 / 00 00 00 00
+
+<-- answer (SYN ACK?)
+
+03 00 / 00 68 / 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+18 fd 74 75 de 23 / d4 ca 6d dd 8c ba
+03 02
+	00 00 00 00
+	00 00 00 29 / (pass) 18 fd 74 75 de 22
+	00 00 00 06 / (next) e4 8d 8c 7b 5a 84
+	00 00 00 1b / (next) d4 ca 6d dd 8c ba
+00 03 / 59 cc /
+	01 00 / aa a6 36 f0 / 1a a3 16 a9
+
+==> answer 1/2
+
+03 00 / 00 68 / 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+d4 ca 6d dd 8c ba / 18 fd 74 75 de 23
+03 00
+	00 00 00 00
+	00 00 00 06 / (next) 6c 3b 6b c0 00 ba
+	00 00 00 06 / (next) e4 8d 8c 7b 5a 84
+	00 00 00 29 / (next) 18 fd 74 75 de 22
+59 cc / 00 03 /
+	03 c3 / 1a a3 16 a9 / aa a6 36 f0
+
+==> answer 2/2 (the SSH banner)
+
+03 00 / 00 78 / 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+d4 ca 6d dd 8c ba / 18 fd 74 75 de 23
+03 00
+	00 00 00 00
+	00 00 00 06 / 6c 3b 6b c0 00 ba
+	00 00 00 06 / e4 8d 8c 7b 5a 84
+	00 00 00 29 / 18 fd 74 75 de 22
+59 cc / 00 03 /
+	02 42 / 1a a3 16 a9 / aa a6 36 f0
+	(payload) 53 53 48 2d 32 2e 30 2d 52 4f 53 53 53 48 0d 0a
+
+RoMON PING (32 byte payload):
+
+03 00 / 00 7e / 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+d4 ca 6d dd 8c ba / 18 fd 74 75 de 23
+03 / 00
+	00 00 00 00
+	00 00 00 06 / 6c 3b 6b c0 00 ba
+	00 00 00 06 / e4 8d 8c 7b 5a 84
+	00 00 00 29 / 18 fd 74 75 de 22
+18 84 / 00 01 /
+	00 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+Pong:
+
+03 00 / 00 7e / 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+18 fd 74 75 de 23 / d4 ca 6d dd 8c ba
+03 / 02
+	00 00 00 00
+	00 00 00 29 / 18 fd 74 75 de 22
+	00 00 00 06 / e4 8d 8c 7b 5a 84
+	00 00 00 1b / d4 ca 6d dd 8c ba
+00 01 / 18 84 /
+	00 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+Winbox SYN:
+
+03 00 / 00 68 / 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+d4 ca 6d dd 8c ba / 18 fd 74 75 de 23
+03 / 00 / 00 00 00 00
+	00 00 00 06 / 6c 3b 6b c0 00 ba
+	00 00 00 06 / e4 8d 8c 7b 5a 84
+	00 00 00 29 / 18 fd 74 75 de 22
+48 f7 / 00 04 / 00 c0 / 05 b0 07 d8 00 00 00 00
+
+selfDiscoverResp: new , parent , distance , cost , parentlink_outidx , identity , ver 0x
+
+if linkCount = 0 => not fwd; first must be self
+if linkCount > 0 => fwd; first must not be self
+
+Basic header:
+	uint16 pkt_type (1=Discover, 2=unicast DiscoverResp, 3=Data, 4=SeqErr, 5=Hello)
+	uint16 frame_len (including ethernet hdr)
+	byte[6] src_id
+	byte[6] dst_id
+type[1] and type[2]:
+	uint8 num_hops
+	uint8 hop_ptr
+	byte[6] all_zeros
+	array[num_hops] {
+		<total size: numHops * 10>
+		uint32 probably_linkid
+		byte[6] hop_id
+	}
+	--
+	array[] {
+		uint8 tag
+		uint8 len
+		byte[len] value
+		tag 01 = something to do with routing {
+			byte[6] src_id
+			array[2] {
+				uint32 probably_linkid
+				uint16 probably_l2mtu
+				uint16 cost
+				byte[6] mac_address
+			}
+		}
+		tag 03 = string (identity)
+		tag 04 = version (x.y + two unknown bytes)
+		tag 05 = string (model)
+	}
+type[3]:
+	uint8 num_hops
+	uint8 hop_ptr
+	byte[4] all_zeros
+	array[num_hops] {
+		uint32 probably_linkid
+		byte[6] hop_id
+	}
+	--
+	uint16 src_port
+	uint16 dst_port
+	(ports: 1=Romon ping, 3=Romon SSH, 4=Romon Winbox)
+	When SSH is used:
+		uint16 unknown
+		uint32 seq
+		uint32 ack
+		<payload>
